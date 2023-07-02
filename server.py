@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, make_response
 import mysql.connector
 
 from database_connection import connect_to_db
@@ -8,8 +8,10 @@ app = Flask(__name__)
 
 
 # Define a route to fetch data from the database
-@app.route('/data', methods=['GET'])
+@app.route('/data', methods=['GET', 'OPTIONS'])
 def get_data():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
     try:
         # Connect to the MySQL database
         conn = connect_to_db()
@@ -84,11 +86,21 @@ def get_data():
         conn.close()
 
         # Return the data as JSON
-        return jsonify(data)
+        return _corsify_actual_response(jsonify(data))
 
     except mysql.connector.Error as error:
         return str(error)
 
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 # Define a route to serve static photos
 @app.route('/downloaded_photos/<path:filename>')
