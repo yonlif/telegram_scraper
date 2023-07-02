@@ -1,4 +1,4 @@
 telethon==1.28.5
 mysql-connector-python==8.0.33
 Flask==2.3.2
-googletrans==3.0.0
+googletrans==4.0.0rc1
