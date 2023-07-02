@@ -53,12 +53,11 @@ def get_messages_from_session(client, start_date, end_date):
                     photo_path = None
                     # Check if the message contains a photo
                     if message.photo:
-                        for photo in message.photo:
-                            # Download the photo
-                            photo_path = client.download_media(photo, file="./downloaded_photos/")
+                        # Download the photo
+                        photo_path = client.download_media(message, file="./downloaded_photos/")
 
-                            # Print the downloaded photo path
-                            logging.info(f"\tDownloaded photo: {photo_path}")
+                        # Print the downloaded photo path
+                        logging.info(f"\tDownloaded photo: {photo_path}")
                     translated_message = "Could not translate message"
                     try:
                         translated_message = translate_message(message.message)

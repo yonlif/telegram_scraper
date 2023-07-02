@@ -1,5 +1,6 @@
 *.session
 credentials.json
+downloaded_photos/*.jpg
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template

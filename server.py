@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 import mysql.connector
 
 from database_connection import connect_to_db
@@ -79,6 +79,12 @@ def get_data():
 
     except mysql.connector.Error as error:
         return str(error)
+
+
+# Define a route to serve static photos
+@app.route('/downloaded_photos/<path:filename>')
+def serve_photo(filename):
+    return send_from_directory('downloaded_photos', filename)
 
 
 # Run the Flask application
