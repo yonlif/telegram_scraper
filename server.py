@@ -35,7 +35,7 @@ def get_data():
             to_date = filters.get('to_date')
 
             if from_date and to_date:
-                where_clauses.append("timestamp BETWEEN %s AND %s")
+                where_clauses.append("date(timestamp) BETWEEN %s AND %s")
                 params.extend([from_date, to_date])
 
             # Process other filters
@@ -56,6 +56,11 @@ def get_data():
             # Add the WHERE clause to the query if there are any filters
             if where_clauses:
                 query += " WHERE " + " AND ".join(where_clauses)
+
+            # Print the query
+            print(f'Query: {query}')
+            # Print the parameters
+            print(f'Params: {params}')
 
             # Execute the query with the provided parameters
             cursor.execute(query, tuple(params))
