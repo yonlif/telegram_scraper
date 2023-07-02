@@ -46,8 +46,9 @@ def get_messages_from_session(client, start_date, end_date):
 
                     # Extract sender's name and phone number
                     sender_name = utils.get_display_name(sender)
-                    sender_phone = sender.phone if sender.phone else ""
+                    sender_phone = sender.__dict__.get('phone', '') or ''
 
+                    logging.info(f"\tFull Sender: {sender}")
                     logging.info(f"\tSender: {sender_name}, Phone: {sender_phone}")
                     logging.info(f"\t\tMessage: {message.message}")
 

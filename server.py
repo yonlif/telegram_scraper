@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, make_response
 import mysql.connector
 
 from database_connection import connect_to_db
@@ -8,8 +8,10 @@ app = Flask(__name__)
 
 
 # Define a route to fetch data from the database
-@app.route('/data', methods=['GET'])
+@app.route('/data', methods=['GET', 'OPTIONS'])
 def get_data():
+    if request.method == 'OPTIONS':
+        return _build_cors_preflight_response()
     try:
         # Connect to the MySQL database
         conn = connect_to_db()
@@ -33,7 +35,7 @@ def get_data():
             to_date = filters.get('to_date')
 
             if from_date and to_date:
-                where_clauses.append("timestamp BETWEEN %s AND %s")
+                where_clauses.append("date(timestamp) BETWEEN %s AND %s")
                 params.extend([from_date, to_date])
 
             # Process other filters
@@ -46,6 +48,8 @@ def get_data():
                         for word in words:
                             sub_clauses.append("message LIKE %s")
                             params.append(f"%{word}%")
+                            sub_clauses.append("translated_message LIKE %s")
+                            params.append(f"%{word}%")
                         where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
                     else:
                         where_clauses.append(f"{key} = %s")
@@ -54,6 +58,11 @@ def get_data():
             # Add the WHERE clause to the query if there are any filters
             if where_clauses:
                 query += " WHERE " + " AND ".join(where_clauses)
+
+            # Print the query
+            print(f'Query: {query}')
+            # Print the parameters
+            print(f'Params: {params}')
 
             # Execute the query with the provided parameters
             cursor.execute(query, tuple(params))
@@ -85,11 +94,21 @@ def get_data():
         conn.close()
 
         # Return the data as JSON
-        return jsonify(data)
+        return _corsify_actual_response(jsonify(data))
 
     except mysql.connector.Error as error:
         return str(error)
 
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+def _corsify_actual_response(response):
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 # Define a route to serve static photos
 @app.route('/downloaded_photos/<path:filename>')
