@@ -48,6 +48,8 @@ def get_data():
                         for word in words:
                             sub_clauses.append("message LIKE %s")
                             params.append(f"%{word}%")
+                            sub_clauses.append("translated_message LIKE %s")
+                            params.append(f"%{word}%")
                         where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
                     else:
                         where_clauses.append(f"{key} = %s")
