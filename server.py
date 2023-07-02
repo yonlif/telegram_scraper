@@ -75,7 +75,8 @@ def get_data():
                 'message': row[4],
                 'translated_message': row[5],
                 'photo_url': row[6],
-                'timestamp': row[7]
+                'timestamp': row[7],
+                'ner': row[8]
                 # Add more fields as per your database schema
             })
 

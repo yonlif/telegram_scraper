@@ -5,6 +5,7 @@ from telethon.sync import TelegramClient
 from datetime import datetime, timezone, timedelta
 from telethon import utils
 
+from ner_api import ner_from_message
 from translate_message import translate_message
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -64,13 +65,19 @@ def get_messages_from_session(client, start_date, end_date):
                     except Exception as e:
                         logging.error(e)
 
+                    ner_object = None
+                    try:
+                        ner_object = str(ner_from_message(message.message))
+                    except Exception as e:
+                        logging.error(e)
                     return_messages.append([dialog.name,
                                             sender_name,
                                             sender_phone,
                                             message.message,
                                             translated_message,
                                             photo_path,
-                                            message.date.strftime('%Y-%m-%d %H:%M:%S')])
+                                            message.date.strftime('%Y-%m-%d %H:%M:%S'),
+                                            ner_object])
             logging.info('-' * 30)
     return return_messages
 
