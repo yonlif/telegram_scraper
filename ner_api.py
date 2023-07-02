@@ -2,6 +2,7 @@ import json
 import requests
 import string
 
+from translate_message import translate_message
 
 API_URL = "https://api-inference.huggingface.co/models/hatmimoha/arabic-ner"
 
@@ -28,9 +29,9 @@ def ner_from_message(msg):
     res = {}
     for item in raw_ner_from_message(msg):
         if item['entity_group'] not in res.keys():
-            res[item['entity_group']] = [item['word']]
+            res[item['entity_group']] = [translate_message(item['word'])]
         else:
-            res[item['entity_group']] = res[item['entity_group']] + [item['word']]
+            res[item['entity_group']] = res[item['entity_group']] + [translate_message(item['word'])]
     return res
 
 
