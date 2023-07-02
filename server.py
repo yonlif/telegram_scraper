@@ -38,9 +38,18 @@ def get_data():
 
             # Process other filters
             for key, value in filters.items():
-                if key != 'from_date' and key != 'to_date':
-                    where_clauses.append(f"{key} = %s")
-                    params.append(value)
+                if key not in ['from_date', 'to_date']:
+                    if key == 'message':
+                        # Split the message value into individual words
+                        words = value.split(',')
+                        sub_clauses = []
+                        for word in words:
+                            sub_clauses.append("message LIKE %s")
+                            params.append(f"%{word}%")
+                        where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
+                    else:
+                        where_clauses.append(f"{key} = %s")
+                        params.append(value)
 
             # Add the WHERE clause to the query if there are any filters
             if where_clauses:
