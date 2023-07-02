@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, request, send_from_directory, make_response
 import mysql.connector
 
+import json
+
 from database_connection import connect_to_db
 
 # Create Flask application
@@ -43,14 +45,25 @@ def get_data():
                 if key not in ['from_date', 'to_date']:
                     if key == 'message':
                         # Split the message value into individual words
-                        words = value.split(',')
-                        sub_clauses = []
-                        for word in words:
-                            sub_clauses.append("message LIKE %s")
-                            params.append(f"%{word}%")
-                            sub_clauses.append("translated_message LIKE %s")
-                            params.append(f"%{word}%")
-                        where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
+                        if '[' in value:
+                            groups = json.loads(value)
+                            for word_group in groups:
+                                sub_clauses = []
+                                for word in word_group:
+                                    sub_clauses.append("message LIKE %s")
+                                    params.append(f"%{word}%")
+                                    sub_clauses.append("translated_message LIKE %s")
+                                    params.append(f"%{word}%")
+                                where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
+                        else:
+                            words = value.split(',')
+                            sub_clauses = []
+                            for word in words:
+                                sub_clauses.append("message LIKE %s")
+                                params.append(f"%{word}%")
+                                sub_clauses.append("translated_message LIKE %s")
+                                params.append(f"%{word}%")
+                            where_clauses.append("(" + " OR ".join(sub_clauses) + ")")
                     else:
                         where_clauses.append(f"{key} = %s")
                         params.append(value)
