@@ -26,6 +26,7 @@ def connect_to_db():
             sender_name VARCHAR(255),
             sender_phone VARCHAR(255),
             message TEXT,
+            translated_message TEXT,
             photo_url VARCHAR(255),
             timestamp TIMESTAMP
         ) CHARACTER SET utf8mb4
@@ -37,8 +38,8 @@ def connect_to_db():
 
 def add_message_to_db(db_connection, message):
     insert_query = '''
-        INSERT INTO telegram_messages (chat_name, sender_name, sender_phone, message, photo_url, timestamp)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO telegram_messages (chat_name, sender_name, sender_phone, message, translated_message, photo_url, timestamp)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     '''
     with db_connection.cursor() as cursor:
         cursor.execute(insert_query, message)

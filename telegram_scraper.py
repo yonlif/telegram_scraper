@@ -5,6 +5,7 @@ from telethon.sync import TelegramClient
 from datetime import datetime, timezone, timedelta
 from telethon import utils
 
+from translate_message import translate_message
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -19,6 +20,8 @@ def create_session(session_name: str = "session_name"):
     client = TelegramClient(session_name, creds["api_id"], creds["api_hash"])
     client.start(creds["phone_number"])
     return client
+
+
 
 
 def get_messages_from_session(client, start_date, end_date):
@@ -56,10 +59,17 @@ def get_messages_from_session(client, start_date, end_date):
 
                             # Print the downloaded photo path
                             logging.info(f"\tDownloaded photo: {photo_path}")
+                    translated_message = "Could not translate message"
+                    try:
+                        translated_message = translate_message(message.message)
+                    except Exception as e:
+                        logging.error(e)
+
                     return_messages.append([dialog.name,
                                             sender_name,
                                             sender_phone,
                                             message.message,
+                                            translated_message,
                                             photo_path,
                                             message.date.strftime('%Y-%m-%d %H:%M:%S')])
             logging.info('-' * 30)
@@ -70,9 +80,10 @@ def main():
     # Specify the date range for filtering messages
     # start_date = datetime(2023, 6, 25, tzinfo=timezone.utc)  # Replace with your desired start date
     end_date = datetime.now(tz=timezone.utc)  # Replace with your desired end date
-    start_date = end_date - timedelta(days=30)
+    start_date = end_date - timedelta(days=5)
 
     messages = get_messages_from_session(create_session(), start_date, end_date)
+    print(messages[-1])
     print(f"read {len(messages)} messages")
 
 

@@ -17,5 +17,15 @@ def main():
         sleep(60)
 
 
+def single():
+    conn = connect_to_db()
+    # Specify the date range for filtering messages
+    end_date = datetime.now(tz=timezone.utc)
+    start_date = end_date - timedelta(days=5)  # Read the messages from the last minute
+
+    messages = get_messages_from_session(create_session(), start_date, end_date)
+    add_multiple_messages_to_db(conn, messages)
+
+
 if __name__ == '__main__':
-    main()
+    single()

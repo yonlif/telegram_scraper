@@ -64,8 +64,9 @@ def get_data():
                 'sender_name': row[2],
                 'sender_phone': row[3],
                 'message': row[4],
-                'photo_url': row[5],
-                'timestamp': row[6]
+                'translated_message': row[5],
+                'photo_url': row[6],
+                'timestamp': row[7]
                 # Add more fields as per your database schema
             })
 
