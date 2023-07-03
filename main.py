@@ -34,9 +34,13 @@ def parse_args():
 
     single_parser = subparsers.add_parser('single')
     group = single_parser.add_mutually_exclusive_group(required=True)
-    single_parser.add_argument('--end-date', '-e', type=str, default=datetime.now(tz=timezone.utc),
+    single_parser.add_argument('--end-date', '-e',
+                               type=lambda d: datetime.strptime(d, '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc),
+                               default=datetime.now(tz=timezone.utc),
                                help='End date (format: YYYY-MM-DD HH:MM:SS)')
-    group.add_argument('--start-date', '-s', type=str, default=None,
+    group.add_argument('--start-date', '-s',
+                       type=lambda d: datetime.strptime(d, '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc),
+                       default=None,
                        help='Start date (format: YYYY-MM-DD HH:MM:SS)')
     group.add_argument('--sample-time', '-t', type=int,
                        help='Sample time backwards (use instead of start_date)')
