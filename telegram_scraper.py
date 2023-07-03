@@ -23,9 +23,7 @@ def create_session(session_name: str = "session_name"):
     return client
 
 
-
-
-def get_messages_from_session(client, start_date, end_date):
+def get_messages_from_session(client, start_date, end_date, bring_photos=False):
     return_messages = []
     with client:
         # Get dialogs (chats and channels)
@@ -50,25 +48,31 @@ def get_messages_from_session(client, start_date, end_date):
 
                     logging.info(f"\tFull Sender: {sender}")
                     logging.info(f"\tSender: {sender_name}, Phone: {sender_phone}")
-                    logging.info(f"\t\tMessage: {message.message}")
+                    logging.info(f"\t\tMessage: '{message.message}'")
 
                     photo_path = None
                     # Check if the message contains a photo
-                    if message.photo:
+                    if bring_photos and message.photo:
                         # Download the photo
                         photo_path = client.download_media(message, file="./downloaded_photos/")
 
                         # Print the downloaded photo path
                         logging.info(f"\tDownloaded photo: {photo_path}")
+
+                    if not message.message:
+                        continue
+
+                    logging.info('Translating message')
                     translated_message = "Could not translate message"
                     try:
                         translated_message = translate_message(message.message)
                     except Exception as e:
                         logging.error(e)
 
+                    logging.info('Extracting entities')
                     ner_object = None
                     try:
-                        ner_object = str(ner_from_message(message.message))
+                        ner_object = json.dumps(ner_from_message(message.message))
                     except Exception as e:
                         logging.error(e)
                     return_messages.append([dialog.name,

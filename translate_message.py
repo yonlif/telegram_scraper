@@ -4,6 +4,7 @@ translator = Translator(service_urls=['translate.google.com'])
 
 
 def translate_message(msg, dest='he'):
+
     return translator.translate(msg, dest=dest).text
 
 

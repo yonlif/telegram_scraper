@@ -89,6 +89,11 @@ def get_data():
         # Convert the rows to a list of dictionaries for JSON serialization
         data = []
         for row in rows:
+            # Support old ner data
+            try:
+                ner_data = json.loads(row[8])
+            except Exception as e:
+                ner_data = {}
             data.append({
                 'message_db_id': row[0],
                 'chat_name': row[1],
@@ -98,7 +103,7 @@ def get_data():
                 'translated_message': row[5],
                 'photo_url': row[6],
                 'timestamp': row[7],
-                'ner': row[8]
+                'ner': ner_data
                 # Add more fields as per your database schema
             })
 

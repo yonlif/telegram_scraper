@@ -2,6 +2,7 @@
 credentials.json
 downloaded_photos/*.jpg
 ai_credentials.json
+database_settings.json
 
 # Created by .ignore support plugin (hsz.mobi)
 ### Python template
